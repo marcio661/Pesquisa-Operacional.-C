@@ -1,7 +1,4 @@
-//Autor: Marcio Luis
-//Matricula: 202001742
-//Materia: Pesquisa Operacional
-//Professor: Thiago Borges
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,6 +15,7 @@ int main()
     int m, n;
     double tableau[MAX_EQUATIONS][MAX_VARIABLES];
     double obj_func[MAX_VARIABLES];
+    printf("Autor: Marcio Luis\nMatricula: 202001742\nMateria: Pesquisa Operacional\nProfessor: Thiago Borges\n");
     printf("Numero de restricoes(m): ");
     scanf("%d", &m);
 
