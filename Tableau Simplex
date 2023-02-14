@@ -1,0 +1,121 @@
+//Autor: Marcio Luis
+//Matricula: 202001742
+//Materia: Pesquisa Operacional
+//Professor: Thiago Borges
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_VARIABLES 100
+#define MAX_EQUATIONS 100
+
+void pivot(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int pivot_row, int pivot_col, int m, int n);
+void simplex(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n);
+void print_tableau(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n);
+void pivot_col_choice(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n, int *pivot_col);
+
+int main()
+{
+    int m, n;
+    double tableau[MAX_EQUATIONS][MAX_VARIABLES];
+    double obj_func[MAX_VARIABLES];
+    printf("Numero de restricoes(m): ");
+    scanf("%d", &m);
+
+    printf("Numero de variaveis (n): ");
+    scanf("%d", &n);
+
+    printf("Insira a funcao objetiva (1 x n):\n");
+    for (int i = 0; i < n; i++)
+        scanf("%lf", &obj_func[i]);
+
+    printf("Insira a tabela das restricoes (m x n+1):\n");
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n + 1; j++)
+            scanf("%lf",&tableau[i][j]);
+
+    // Adicionando a função objetiva ao final da tabela
+    for (int i = 0; i < n; i++)
+        tableau[m][i] = -obj_func[i];
+    tableau[m][n] = 0;
+
+    simplex(tableau, m, n);
+    print_tableau(tableau, m, n);
+
+    printf("Valor da funcao objetiva maxima: %.2lf\n", tableau[m][n]);
+
+    return 0;
+}
+
+void pivot(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int pivot_row, int pivot_col, int m, int n)
+{
+    double pivot_element = tableau[pivot_row][pivot_col];
+    for (int j = 0; j <= n; j++)
+        tableau[pivot_row][j] /= pivot_element;
+    for (int i = 0; i <= m; i++)
+    {
+        if (i != pivot_row)
+        {
+            double multiplier = tableau[i][pivot_col];
+            for (int j = 0; j <= n; j++)
+                tableau[i][j] -= multiplier * tableau[pivot_row][j];
+        }
+    }
+}
+
+void simplex(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n)
+{
+int pivot_row, pivot_col;
+while (1)
+{
+pivot_col_choice(tableau, m, n, &pivot_col);
+if (pivot_col == -1)
+break;
+int pivot_row = -1;
+double min_ratio = -1;
+for (int i = 0; i < m; i++)
+{
+if (tableau[i][pivot_col] <= 0)
+continue;
+double ratio = tableau[i][n] / tableau[i][pivot_col];
+if (ratio < min_ratio || pivot_row == -1)
+{
+min_ratio = ratio;
+pivot_row = i;
+}
+}
+if (pivot_row == -1)
+{
+printf("Nao ha solucao otima.\n");
+return;
+}
+pivot(tableau, pivot_row, pivot_col, m, n);
+printf("Tabela na iteracao %d\n", pivot_col + pivot_row + 1);
+print_tableau(tableau, m, n);
+}
+}
+
+void pivot_col_choice(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n, int *pivot_col)
+{
+*pivot_col = -1;
+double min_value = 0;
+for (int j = 0; j < n; j++)
+{
+if (tableau[m][j] < min_value)
+{
+min_value = tableau[m][j];
+*pivot_col = j;
+}
+}
+}
+
+void print_tableau(double tableau[MAX_EQUATIONS][MAX_VARIABLES], int m, int n)
+{
+printf("Tabela Simplex: \n");
+for (int i = 0; i <= m; i++)
+{
+for (int j = 0; j <= n; j++)
+printf("%.2lf ", tableau[i][j]);
+printf("\n");
+}
+printf("\n");
+}
